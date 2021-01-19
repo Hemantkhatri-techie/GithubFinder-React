@@ -1,33 +1,34 @@
-import React, { useState} from 'react';
-import PropTypes from 'prop-types'
+import React, { useState, useContext } from 'react';
+import GithubContext from '../../context/github/githubContext';
+import AlertContext from '../../context/alert/alertContext';
 
+const Search = () => {
+  const githubContext = useContext(GithubContext);
+  const alertContext = useContext(AlertContext);
 
-const Search = ({searchUsers, clearUsers,showClear,setAlert}) => {
   const [text, setText] = useState('');
-  
-  const onSubmitHandler = e => {
+
+  const onSubmit = e => {
     e.preventDefault();
-    if(text === '')
-    {
-      setAlert('Please type something' , 'light')
-    }
-    else{
-      searchUsers(text);
-      setText('');  
+    if (text === '') {
+      alertContext.setAlert('Please enter something', 'light');
+    } else {
+      githubContext.searchUsers(text);
+      setText('');
     }
   };
 
- const onChangeHandler = e => setText(e.target.value);
-  
+  const onChange = e => setText(e.target.value);
+
   return (
     <div>
-      <form onSubmit={onSubmitHandler} className='form'>
+      <form onSubmit={onSubmit} className='form'>
         <input
           type='text'
           name='text'
           placeholder='Search Users...'
           value={text}
-          onChange={onChangeHandler}
+          onChange={onChange}
         />
         <input
           type='submit'
@@ -35,20 +36,16 @@ const Search = ({searchUsers, clearUsers,showClear,setAlert}) => {
           className='btn btn-dark btn-block'
         />
       </form>
-      {showClear && <button
-          onClick={clearUsers}
+      {githubContext.users.length > 0 && (
+        <button
           className='btn btn-light btn-block'
-        >Clear</button>}
-      
+          onClick={githubContext.clearUsers}
+        >
+          Clear
+        </button>
+      )}
     </div>
   );
 };
-
-Search.propTypes = {
-  searchUsers : PropTypes.func.isRequired,
-  clearUsers : PropTypes.func.isRequired,
-  showClear : PropTypes.bool.isRequired,
-  setAlert : PropTypes.func.isRequired
-}
 
 export default Search;
